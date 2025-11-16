@@ -1,0 +1,6 @@
+name: SSASpawnerLimiter
+version: '${version}'
+main: github.io.ssaspawnerlimiter.SSASpawnerLimiter
+api-version: '1.21'
+author: Nighter
+depend: [SmartSpawner]
