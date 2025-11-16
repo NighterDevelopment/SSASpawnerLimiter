@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 group = 'github.io'
-version = '1.0'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -27,7 +27,9 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.projectlombok:lombok:1.18.42")
+    implementation 'com.github.NighterDevelopment:PluginUpdateCore:1.0.0'
     implementation 'com.github.NighterDevelopment:PluginLangCore:1.0.0'
+    compileOnly 'com.github.NighterDevelopment:SmartSpawner:1.5.7'
 }
 
 def targetJavaVersion = 21
