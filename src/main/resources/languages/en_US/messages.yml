@@ -1,0 +1,63 @@
+# SSA Spawner Limiter Messages (en_US)
+# Follows SmartSpawner message format structure
+
+prefix: "&#ff8c42[&#ffb347SSA &#ffd580Limiter&#ff8c42] &r"
+
+# Limit messages
+limit_reached:
+  action_bar: "&#ff5252ᴄʜᴜɴᴋ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ: &#f8f8ff{current}&#ff5252/&#f8f8ff{limit}"
+  sound: block.note_block.pling
+
+# Command messages
+command_info_header:
+  message: "&#ffb347━━━━━ &#ffd580ꜱᴘᴀᴡɴᴇʀ ʟɪᴍɪᴛᴇʀ ɪɴꜰᴏ &#ffb347━━━━━"
+
+command_info_chunk:
+  message: "  &#f8f8ff• &#ffd580ᴄᴜʀʀᴇɴᴛ ᴄʜᴜɴᴋ: &#ff8c42{current}&#f8f8ff/&#ff8c42{limit} &#f8f8ffꜱᴘᴀᴡɴᴇʀꜱ"
+
+command_info_location:
+  message: "  &#f8f8ff• &#ffd580ʟᴏᴄᴀᴛɪᴏɴ: &#ff8c42x:{x}, z:{z}, ᴡᴏʀʟᴅ:{world}"
+
+command_info_bypass:
+  message: "  &#f8f8ff• &#ffd580ʙʏᴘᴀꜱꜱ: &#ff8c42{bypass}"
+
+command_reload:
+  message: "&#ffd580ʀᴇʟᴏᴀᴅɪɴɢ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ..."
+
+reload_success:
+  message: "&#37eb9aᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ ʀᴇʟᴏᴀᴅᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ!"
+  sound: entity.player.levelup
+
+reload_failed:
+  message: "&#ff5252ꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ!"
+  sound: block.note_block.pling
+
+no_permission:
+  message: "&#ff5252ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴ!"
+  sound: entity.villager.no
+
+player_only:
+  message: "&#ff5252ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ᴄᴀɴ ᴏɴʟʏ ʙᴇ ᴜꜱᴇᴅ ʙʏ ᴘʟᴀʏᴇʀꜱ!"
+
+command_stats_header:
+  message: "&#ffb347━━━━━ &#ffd580ꜱᴛᴀᴛɪꜱᴛɪᴄꜱ &#ffb347━━━━━"
+
+command_stats_total_chunks:
+  message: "  &#f8f8ff• &#ffd580ᴛᴏᴛᴀʟ ᴄʜᴜɴᴋꜱ: &#ff8c42{total}"
+
+command_stats_total_spawners:
+  message: "  &#f8f8ff• &#ffd580ᴛᴏᴛᴀʟ ꜱᴘᴀᴡɴᴇʀꜱ: &#ff8c42{spawners}"
+
+command_stats_cache_size:
+  message: "  &#f8f8ff• &#ffd580ᴄᴀᴄʜᴇ ꜱɪᴢᴇ: &#ff8c42{cache}"
+
+command_stats_database:
+  message: "  &#f8f8ff• &#ffd580ᴅᴀᴛᴀʙᴀꜱᴇ: &#ff8c42{database}"
+
+# Database messages
+database_connected:
+  message: "&#37eb9aᴅᴀᴛᴀʙᴀꜱᴇ ᴄᴏɴɴᴇᴄᴛᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ!"
+
+database_connection_failed:
+  message: "&#ff5252ꜰᴀɪʟᴇᴅ ᴛᴏ ᴄᴏɴɴᴇᴄᴛ ᴛᴏ ᴅᴀᴛᴀʙᴀꜱᴇ: &#f8f8ff{error}"
+

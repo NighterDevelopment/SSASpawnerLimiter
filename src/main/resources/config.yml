@@ -1,1 +1,8 @@
+# SSA Spawner Limiter Configuration
+# Language file to use (currently only en_US is supported)
 language: "en_US"
+
+# Maximum number of spawners (including stacks) allowed per chunk
+# Each spawner in a stack counts toward the limit (not just 1 per stack)
+# Example: 1 spawner with 64 stack + 1 spawner with 6 stack = 70 total count in chunk
+max_spawners_per_chunk: 100

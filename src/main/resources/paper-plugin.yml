@@ -1,0 +1,14 @@
+name: SSASpawnerLimiter
+version: '${version}'
+main: github.io.ssaspawnerlimiter.SSASpawnerLimiter
+api-version: '1.21'
+loader: PAPER
+has-open-classloader: true
+
+dependencies:
+  server:
+    SmartSpawner:
+      load: BEFORE
+      required: true
+      join-classpath: true
+

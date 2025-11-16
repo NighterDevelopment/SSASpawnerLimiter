@@ -30,6 +30,9 @@ dependencies {
     implementation 'com.github.NighterDevelopment:PluginUpdateCore:1.0.0'
     implementation 'com.github.NighterDevelopment:PluginLangCore:1.0.0'
     compileOnly 'com.github.NighterDevelopment:SmartSpawner:1.5.7'
+
+    // SQLite for database storage
+    implementation 'org.xerial:sqlite-jdbc:3.47.1.0'
 }
 
 def targetJavaVersion = 21
@@ -57,6 +60,9 @@ processResources {
     filesMatching('plugin.yml') {
         expand props
     }
+    filesMatching('paper-plugin.yml') {
+        expand props
+    }
 }
 
 jar {
@@ -64,5 +70,12 @@ jar {
     archiveVersion.set("${version}")
     from sourceSets.main.output
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    // destinationDirectory = file('C:\\Users\\notni\\OneDrive\\Desktop\\paper_1.21.8\\plugins')
+
+    // Include dependencies in the jar
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    // Exclude META-INF signatures
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
 }

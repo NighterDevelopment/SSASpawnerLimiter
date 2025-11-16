@@ -4,3 +4,37 @@ main: github.io.ssaspawnerlimiter.SSASpawnerLimiter
 api-version: '1.21'
 author: Nighter
 depend: [SmartSpawner]
+folia-supported: true
+description: "Addon for SmartSpawner that limits spawner placement per chunk"
+
+permissions:
+  ssaspawnerlimiter.*:
+    description: "Gives access to all SSASpawnerLimiter features"
+    default: op
+    children:
+      ssaspawnerlimiter.bypass: true
+      ssaspawnerlimiter.command.*: true
+
+  ssaspawnerlimiter.bypass:
+    description: "Bypass spawner chunk limit"
+    default: op
+
+  ssaspawnerlimiter.command.*:
+    description: "Access to all SSASpawnerLimiter commands"
+    default: op
+    children:
+      ssaspawnerlimiter.command.info: true
+      ssaspawnerlimiter.command.reload: true
+      ssaspawnerlimiter.command.stats: true
+
+  ssaspawnerlimiter.command.info:
+    description: "Check spawner count in current chunk"
+    default: true
+
+  ssaspawnerlimiter.command.reload:
+    description: "Reload plugin configuration"
+    default: op
+
+  ssaspawnerlimiter.command.stats:
+    description: "View plugin statistics"
+    default: op
