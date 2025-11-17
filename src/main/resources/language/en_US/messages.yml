@@ -1,5 +1,4 @@
 # SSA Spawner Limiter Messages (en_US)
-# Follows SmartSpawner message format structure
 
 prefix: "&#ff8c42[&#ffb347SSA &#ffd580Limiter&#ff8c42] &r"
 
@@ -8,7 +7,7 @@ limit_reached:
   action_bar: "&#ff5252ᴄʜᴜɴᴋ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ: &#f8f8ff{current}&#ff5252/&#f8f8ff{limit}"
   sound: block.note_block.pling
 
-# Command messages
+# Command messages - Info
 command_info_header:
   message: "&#ffb347━━━━━ &#ffd580ꜱᴘᴀᴡɴᴇʀ ʟɪᴍɪᴛᴇʀ ɪɴꜰᴏ &#ffb347━━━━━"
 
@@ -21,6 +20,7 @@ command_info_location:
 command_info_bypass:
   message: "  &#f8f8ff• &#ffd580ʙʏᴘᴀꜱꜱ: &#ff8c42{bypass}"
 
+# Command messages - Reload
 command_reload:
   message: "&#ffd580ʀᴇʟᴏᴀᴅɪɴɢ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ..."
 
@@ -32,13 +32,7 @@ reload_failed:
   message: "&#ff5252ꜰᴀɪʟᴇᴅ ᴛᴏ ʀᴇʟᴏᴀᴅ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ!"
   sound: block.note_block.pling
 
-no_permission:
-  message: "&#ff5252ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴ!"
-  sound: entity.villager.no
-
-player_only:
-  message: "&#ff5252ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ᴄᴀɴ ᴏɴʟʏ ʙᴇ ᴜꜱᴇᴅ ʙʏ ᴘʟᴀʏᴇʀꜱ!"
-
+# Command messages - Stats
 command_stats_header:
   message: "&#ffb347━━━━━ &#ffd580ꜱᴛᴀᴛɪꜱᴛɪᴄꜱ &#ffb347━━━━━"
 
@@ -54,10 +48,10 @@ command_stats_cache_size:
 command_stats_database:
   message: "  &#f8f8ff• &#ffd580ᴅᴀᴛᴀʙᴀꜱᴇ: &#ff8c42{database}"
 
-# Database messages
-database_connected:
-  message: "&#37eb9aᴅᴀᴛᴀʙᴀꜱᴇ ᴄᴏɴɴᴇᴄᴛᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ!"
+# Error messages
+no_permission:
+  message: "&#ff5252ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴘᴇʀᴍɪꜱꜱɪᴏɴ!"
+  sound: entity.villager.no
 
-database_connection_failed:
-  message: "&#ff5252ꜰᴀɪʟᴇᴅ ᴛᴏ ᴄᴏɴɴᴇᴄᴛ ᴛᴏ ᴅᴀᴛᴀʙᴀꜱᴇ: &#f8f8ff{error}"
-
+player_only:
+  message: "&#ff5252ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ᴄᴀɴ ᴏɴʟʏ ʙᴇ ᴜꜱᴇᴅ ʙʏ ᴘʟᴀʏᴇʀꜱ!"

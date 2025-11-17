@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -44,90 +43,87 @@ public class ChunkLimitService {
     }
 
     /**
-     * Check if a player can place spawners in a chunk
+     * Check if a player can place spawners in a chunk (SYNC)
      * @param player The player placing the spawner
      * @param location The location where spawner will be placed
      * @param quantity The quantity being placed
-     * @return CompletableFuture with true if allowed, false otherwise
+     * @return true if allowed, false otherwise
      */
-    public CompletableFuture<Boolean> canPlaceSpawner(Player player, Location location, int quantity) {
+    public boolean canPlaceSpawner(Player player, Location location, int quantity) {
         // Check bypass permission (hardcoded for simplicity)
         if (player.hasPermission("ssaspawnerlimiter.bypass")) {
-            return CompletableFuture.completedFuture(true);
+            return true;
         }
 
         Chunk chunk = location.getChunk();
         ChunkKey key = new ChunkKey(chunk);
 
-        return getSpawnerCount(key).thenApply(currentCount -> {
-            int newCount = currentCount + quantity;
-            return newCount <= maxSpawnersPerChunk;
-        });
+        int currentCount = getSpawnerCount(key);
+        int newCount = currentCount + quantity;
+        return newCount <= maxSpawnersPerChunk;
     }
 
     /**
-     * Get current spawner count in a chunk
+     * Get current spawner count in a chunk (SYNC)
      * @param key The chunk key
-     * @return CompletableFuture with current count
+     * @return current count
      */
-    public CompletableFuture<Integer> getSpawnerCount(ChunkKey key) {
+    public int getSpawnerCount(ChunkKey key) {
         if (cacheEnabled) {
             CacheEntry cached = getCachedCount(key);
             if (cached != null && !cached.isExpired()) {
-                return CompletableFuture.completedFuture(cached.count);
+                return cached.count;
             }
         }
 
-        // Cache miss or expired, fetch from database
-
-        return databaseManager.getSpawnerCount(key.world(), key.x(), key.z())
-            .thenApply(count -> {
-                if (cacheEnabled) {
-                    updateCache(key, count);
-                }
-                return count;
-            });
+        // Cache miss or expired, fetch from database synchronously
+        try {
+            int count = databaseManager.getSpawnerCount(key.world(), key.x(), key.z()).get();
+            if (cacheEnabled) {
+                updateCache(key, count);
+            }
+            return count;
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error getting spawner count for chunk " + key + ": " + e.getMessage());
+            return 0;
+        }
     }
 
     /**
-     * Add spawners to a chunk count
+     * Add spawners to a chunk count (ASYNC - for background database update)
      * @param location The location of the spawner
      * @param quantity The quantity to add
-     * @return CompletableFuture with new count
      */
-    public CompletableFuture<Integer> addSpawners(Location location, int quantity) {
+    public void addSpawners(Location location, int quantity) {
         Chunk chunk = location.getChunk();
         ChunkKey key = new ChunkKey(chunk);
 
-        return databaseManager.incrementSpawnerCount(key.world(), key.x(), key.z(), quantity)
-            .thenApply(newCount -> {
+        databaseManager.incrementSpawnerCount(key.world(), key.x(), key.z(), quantity)
+            .thenAccept(newCount -> {
                 if (cacheEnabled) {
                     updateCache(key, newCount);
                 }
-                return newCount;
             });
     }
 
     /**
-     * Remove spawners from a chunk count
+     * Remove spawners from a chunk count (ASYNC - for background database update)
      * @param location The location of the spawner
      * @param quantity The quantity to remove
-     * @return CompletableFuture with new count
      */
-    public CompletableFuture<Integer> removeSpawners(Location location, int quantity) {
-        return addSpawners(location, -quantity);
+    public void removeSpawners(Location location, int quantity) {
+        addSpawners(location, -quantity);
     }
 
     /**
-     * Update spawner count when stacking
+     * Update spawner count when stacking (ASYNC - for background database update)
      * @param location The location of the spawner
      * @param oldQuantity The old quantity
      * @param newQuantity The new quantity
-     * @return CompletableFuture with new count
      */
-    public CompletableFuture<Integer> updateStackCount(Location location, int oldQuantity, int newQuantity) {
+    public void updateStackCount(Location location, int oldQuantity, int newQuantity) {
         int difference = newQuantity - oldQuantity;
-        return addSpawners(location, difference);
+        addSpawners(location, difference);
     }
 
     /**

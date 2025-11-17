@@ -39,30 +39,23 @@ public class SpawnerLimitListener implements Listener {
         Location location = event.getLocation();
         int quantity = event.getQuantity();
 
-        // Check limit asynchronously, then sync back to cancel if needed
-        limitService.canPlaceSpawner(player, location, quantity).thenAccept(canPlace -> {
-            if (!canPlace) {
-                // Must cancel on the region thread for Folia
-                Scheduler.runAtLocation(location, () -> {
-                    if (!event.isCancelled()) {
-                        event.setCancelled(true);
+        // Check limit synchronously for immediate cancellation
+        boolean canPlace = limitService.canPlaceSpawner(player, location, quantity);
 
-                        // Send message to player
-                        limitService.getSpawnerCount(new ChunkKey(location)).thenAccept(currentCount -> {
-                            Scheduler.runAtLocation(player.getLocation(), () -> {
-                                Map<String, String> placeholders = new HashMap<>();
-                                placeholders.put("limit", String.valueOf(limitService.getMaxSpawnersPerChunk()));
-                                placeholders.put("current", String.valueOf(currentCount));
-                                plugin.getMessageService().sendMessage(player, "limit_reached", placeholders);
-                            });
-                        });
-                    }
-                });
-            } else {
-                // Update count in database asynchronously
-                limitService.addSpawners(location, quantity);
-            }
-        });
+        if (!canPlace) {
+            event.setCancelled(true);
+
+            // Send message to player on their region thread
+            Scheduler.runAtLocation(player.getLocation(), () -> {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("limit", String.valueOf(limitService.getMaxSpawnersPerChunk()));
+                placeholders.put("current", String.valueOf(limitService.getSpawnerCount(new ChunkKey(location))));
+                plugin.getMessageService().sendMessage(player, "limit_reached", placeholders);
+            });
+        } else {
+            // Update count in database asynchronously (in background)
+            limitService.addSpawners(location, quantity);
+        }
     }
 
     /**
@@ -85,15 +78,8 @@ public class SpawnerLimitListener implements Listener {
             ));
         }
 
-        // Update count asynchronously
-        limitService.removeSpawners(location, quantity).thenAccept(newCount -> {
-            if (plugin.getConfig().getBoolean("debug", false)) {
-                plugin.getLogger().info(String.format(
-                    "[DEBUG] Spawners removed - New count: %d, Chunk: %s",
-                    newCount, new ChunkKey(location)
-                ));
-            }
-        });
+        // Update count asynchronously in background
+        limitService.removeSpawners(location, quantity);
     }
 
     /**
@@ -109,31 +95,24 @@ public class SpawnerLimitListener implements Listener {
 
         // Only check if we're adding to the stack
         if (difference <= 0) {
-            // If removing from stack, update count in MONITOR phase
             return;
         }
 
-        // Check if adding would exceed limit
-        limitService.canPlaceSpawner(player, location, difference).thenAccept(canStack -> {
-            if (!canStack) {
-                // Must cancel on the region thread for Folia
-                Scheduler.runAtLocation(location, () -> {
-                    if (!event.isCancelled()) {
-                        event.setCancelled(true);
+        // Check if adding would exceed limit (SYNC for immediate cancel)
+        boolean canStack = limitService.canPlaceSpawner(player, location, difference);
 
-                        // Send message to player
-                        limitService.getSpawnerCount(new ChunkKey(location)).thenAccept(currentCount -> {
-                            Scheduler.runAtLocation(player.getLocation(), () -> {
-                                Map<String, String> placeholders = new HashMap<>();
-                                placeholders.put("limit", String.valueOf(limitService.getMaxSpawnersPerChunk()));
-                                placeholders.put("current", String.valueOf(currentCount));
-                                plugin.getMessageService().sendMessage(player, "limit_reached", placeholders);
-                            });
-                        });
-                    }
-                });
-            }
-        });
+        if (!canStack) {
+            event.setCancelled(true);
+
+            // Send message to player on their region thread
+            Scheduler.runAtLocation(player.getLocation(), () -> {
+                int currentCount = limitService.getSpawnerCount(new ChunkKey(location));
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("limit", String.valueOf(limitService.getMaxSpawnersPerChunk()));
+                placeholders.put("current", String.valueOf(currentCount));
+                plugin.getMessageService().sendMessage(player, "limit_reached", placeholders);
+            });
+        }
     }
 
     /**

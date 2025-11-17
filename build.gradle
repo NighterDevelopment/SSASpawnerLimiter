@@ -70,6 +70,7 @@ jar {
     archiveVersion.set("${version}")
     from sourceSets.main.output
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    destinationDirectory = file('C:\\Users\\notni\\OneDrive\\Desktop\\paper_1.21.8\\plugins')
 
     // Include dependencies in the jar
     from {

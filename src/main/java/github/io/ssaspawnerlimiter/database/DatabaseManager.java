@@ -31,7 +31,7 @@ public class DatabaseManager {
             dataFolder.mkdirs();
         }
 
-        String filename = plugin.getConfig().getString("database.filename", "spawner_limits.db");
+        String filename = "spawner_limits.db";
         this.databasePath = new File(dataFolder, filename).getAbsolutePath();
     }
 
@@ -46,13 +46,9 @@ public class DatabaseManager {
                 connection.setAutoCommit(true);
 
                 createTables();
-                plugin.getMessageService().sendMessage(Bukkit.getConsoleSender(), "database_connected");
                 return true;
-            } catch (ClassNotFoundException | SQLException e) {
+            } catch (Exception e) {
                 plugin.getLogger().log(Level.SEVERE, "Failed to initialize database", e);
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("error", e.getMessage());
-                plugin.getMessageService().sendMessage(Bukkit.getConsoleSender(), "database_connection_failed", placeholders);
                 return false;
             }
         });

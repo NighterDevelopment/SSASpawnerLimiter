@@ -1,6 +1,7 @@
 package github.io.ssaspawnerlimiter.command.subcommands;
 
 import com.mojang.brigadier.context.CommandContext;
+import github.io.ssaspawnerlimiter.Scheduler;
 import github.io.ssaspawnerlimiter.SSASpawnerLimiter;
 import github.io.ssaspawnerlimiter.command.BaseSubCommand;
 import github.io.ssaspawnerlimiter.util.ChunkKey;
@@ -45,9 +46,7 @@ public class InfoSubCommand extends BaseSubCommand {
         }
 
         Player player = getPlayer(sender);
-        if (player == null) {
-            return 0;
-        }
+        assert player != null; // Already checked by isPlayer
 
         Chunk chunk = player.getLocation().getChunk();
         ChunkKey key = new ChunkKey(chunk);
@@ -56,23 +55,28 @@ public class InfoSubCommand extends BaseSubCommand {
 
         plugin.getMessageService().sendMessage(player, "command_info_header");
 
-        plugin.getChunkLimitService().getSpawnerCount(key).thenAccept(count -> {
+        // Run async to avoid blocking main thread
+        Scheduler.runTaskAsync(() -> {
+            int count = plugin.getChunkLimitService().getSpawnerCount(key);
             int limit = plugin.getChunkLimitService().getMaxSpawnersPerChunk();
 
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("current", String.valueOf(count));
-            placeholders.put("limit", String.valueOf(limit));
-            plugin.getMessageService().sendMessage(player, "command_info_chunk", placeholders);
+            // Send messages on player's region thread
+            Scheduler.runAtLocation(player.getLocation(), () -> {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("current", String.valueOf(count));
+                placeholders.put("limit", String.valueOf(limit));
+                plugin.getMessageService().sendMessage(player, "command_info_chunk", placeholders);
 
-            Map<String, String> locationPlaceholders = new HashMap<>();
-            locationPlaceholders.put("x", String.valueOf(chunk.getX()));
-            locationPlaceholders.put("z", String.valueOf(chunk.getZ()));
-            locationPlaceholders.put("world", chunk.getWorld().getName());
-            plugin.getMessageService().sendMessage(player, "command_info_location", locationPlaceholders);
+                Map<String, String> locationPlaceholders = new HashMap<>();
+                locationPlaceholders.put("x", String.valueOf(chunk.getX()));
+                locationPlaceholders.put("z", String.valueOf(chunk.getZ()));
+                locationPlaceholders.put("world", chunk.getWorld().getName());
+                plugin.getMessageService().sendMessage(player, "command_info_location", locationPlaceholders);
 
-            Map<String, String> bypassPlaceholders = new HashMap<>();
-            bypassPlaceholders.put("bypass", hasBypass ? "Yes" : "No");
-            plugin.getMessageService().sendMessage(player, "command_info_bypass", bypassPlaceholders);
+                Map<String, String> bypassPlaceholders = new HashMap<>();
+                bypassPlaceholders.put("bypass", hasBypass ? "Yes" : "No");
+                plugin.getMessageService().sendMessage(player, "command_info_bypass", bypassPlaceholders);
+            });
         });
 
         return 1;

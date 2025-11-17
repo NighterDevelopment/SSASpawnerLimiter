@@ -2,8 +2,6 @@ name: SSASpawnerLimiter
 version: '${version}'
 main: github.io.ssaspawnerlimiter.SSASpawnerLimiter
 api-version: '1.21'
-loader: PAPER
-has-open-classloader: true
 
 dependencies:
   server:
@@ -11,4 +9,29 @@ dependencies:
       load: BEFORE
       required: true
       join-classpath: true
+
+permissions:
+  ssaspawnerlimiter.bypass:
+    description: "Bypass spawner chunk limit"
+    default: false
+
+  ssaspawnerlimiter.command.*:
+    description: "Access to all SSASpawnerLimiter commands"
+    default: op
+    children:
+      ssaspawnerlimiter.command.info: true
+      ssaspawnerlimiter.command.reload: true
+      ssaspawnerlimiter.command.stats: true
+
+  ssaspawnerlimiter.command.info:
+    description: "Check spawner count in current chunk"
+    default: true
+
+  ssaspawnerlimiter.command.reload:
+    description: "Reload plugin configuration"
+    default: op
+
+  ssaspawnerlimiter.command.stats:
+    description: "View plugin statistics"
+    default: op
 

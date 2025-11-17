@@ -3,6 +3,7 @@ package github.io.ssaspawnerlimiter.command.subcommands;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import github.io.ssaspawnerlimiter.Scheduler;
 import github.io.ssaspawnerlimiter.SSASpawnerLimiter;
 import github.io.ssaspawnerlimiter.command.BaseSubCommand;
 import github.io.ssaspawnerlimiter.util.ChunkKey;
@@ -13,9 +14,6 @@ import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NullMarked;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @NullMarked
 public class CheckSubCommand extends BaseSubCommand {
@@ -45,7 +43,7 @@ public class CheckSubCommand extends BaseSubCommand {
 
         builder.requires(source -> hasPermission(source.getSender()));
 
-        // Add player argument
+        // Add player argument with suggestions
         builder.then(Commands.argument("player", StringArgumentType.word())
                 .suggests((context, suggestionsBuilder) -> {
                     for (Player p : Bukkit.getOnlinePlayers()) {
@@ -55,14 +53,16 @@ public class CheckSubCommand extends BaseSubCommand {
                 })
                 .executes(this::executeWithPlayer));
 
+        // Add execute for when no player is provided (show usage)
+        builder.executes(this::execute);
+
         return builder;
     }
 
     @Override
     public int execute(CommandContext<CommandSourceStack> context) {
-        // This should not be called as we override build()
         CommandSender sender = context.getSource().getSender();
-        sender.sendMessage("Usage: /ssalimiter check <player>");
+        sender.sendMessage("§cUsage: /ssaspawnerlimiter check <player>");
         return 0;
     }
 
@@ -72,23 +72,28 @@ public class CheckSubCommand extends BaseSubCommand {
 
         Player target = Bukkit.getPlayer(playerName);
         if (target == null || !target.isOnline()) {
-            sender.sendMessage("Player not found or not online!");
+            sender.sendMessage("§cPlayer not found or not online!");
             return 0;
         }
 
         Chunk chunk = target.getLocation().getChunk();
         ChunkKey key = new ChunkKey(chunk);
 
-        plugin.getChunkLimitService().getSpawnerCount(key).thenAccept(count -> {
+        // Run async to avoid blocking
+        Scheduler.runTaskAsync(() -> {
+            int count = plugin.getChunkLimitService().getSpawnerCount(key);
             int limit = plugin.getChunkLimitService().getMaxSpawnersPerChunk();
 
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("player", target.getName());
-            placeholders.put("current", String.valueOf(count));
-            placeholders.put("limit", String.valueOf(limit));
-
-            sender.sendMessage(String.format("Player %s's chunk has %d/%d spawners.",
-                target.getName(), count, limit));
+            // Send message on appropriate thread
+            if (sender instanceof Player player) {
+                Scheduler.runAtLocation(player.getLocation(), () ->
+                    sender.sendMessage(String.format("§aPlayer %s's chunk has %d/%d spawners.",
+                        target.getName(), count, limit))
+                );
+            } else {
+                sender.sendMessage(String.format("§aPlayer %s's chunk has %d/%d spawners.",
+                    target.getName(), count, limit));
+            }
         });
 
         return 1;

@@ -41,7 +41,7 @@ public final class SSASpawnerLimiter extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        getLogger().info("SmartSpawner found, SSA Spawner Limiter is operational!");
+        getLogger().info("SmartSpawner found, integrated with SSA Spawner Limiter");
     }
 
     private void checkPluginUpdates() {
@@ -65,7 +65,6 @@ public final class SSASpawnerLimiter extends JavaPlugin {
                 LanguageManager.LanguageFileType.MESSAGES
         );
         messageService = new MessageService(this, languageManager);
-        getLogger().info("Language system initialized");
     }
 
     private void initializeDatabase() {
@@ -74,7 +73,6 @@ public final class SSASpawnerLimiter extends JavaPlugin {
         // Initialize database asynchronously
         databaseManager.initialize().thenAccept(success -> {
             if (success) {
-                getLogger().info("Database initialized successfully");
                 initializeServices();
             } else {
                 getLogger().severe("Failed to initialize database! Disabling plugin...");
@@ -90,24 +88,20 @@ public final class SSASpawnerLimiter extends JavaPlugin {
     private void initializeServices() {
         // Initialize chunk limit service
         chunkLimitService = new ChunkLimitService(this, databaseManager);
-        getLogger().info("Chunk limit service initialized");
 
         // Register event listeners
         Bukkit.getPluginManager().registerEvents(new SpawnerLimitListener(this, chunkLimitService), this);
-        getLogger().info("Event listeners registered");
 
         // Start cache cleanup task (hardcoded: 5 minutes = 6000 ticks)
         long cleanupInterval = 6000L; // 5 minutes in ticks
         cacheCleanupTask = Scheduler.runTaskTimerAsync(() -> {
             chunkLimitService.cleanupExpiredCache();
         }, cleanupInterval, cleanupInterval);
-        getLogger().info("Cache cleanup task started");
     }
 
     private void initializeCommands() {
         commandManager = new BrigadierCommandManager(this);
         commandManager.registerCommands();
-        getLogger().info("Commands registered");
     }
 
     @Override
