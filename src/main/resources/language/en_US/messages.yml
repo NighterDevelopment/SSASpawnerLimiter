@@ -4,7 +4,7 @@ prefix: "&#ff8c42[&#ffb347SSA &#ffd580Limiter&#ff8c42] &r"
 
 # Limit messages
 limit_reached:
-  action_bar: "&#ff5252ᴄʜᴜɴᴋ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ: &#f8f8ff{current}&#ff5252/&#f8f8ff{limit} ꜱᴘᴀᴡɴᴇʀꜱ"
+  action_bar: "&#ff5252ᴄʜᴜɴᴋ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ: &#f8f8ff{current}&#ff5252/&#f8f8ff{limit} &#ff5252ꜱᴘᴀᴡɴᴇʀꜱ"
   sound: block.note_block.pling
 
 # Command messages - Info

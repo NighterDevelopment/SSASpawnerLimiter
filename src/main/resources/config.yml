@@ -6,6 +6,12 @@ language: "en_US"
 debug: false
 
 # Maximum number of spawners (including stacks) allowed per chunk
-# Each spawner in a stack counts toward the limit (not just 1 per stack)
-# Example: 1 spawner with 64 stack + 1 spawner with 6 stack = 70 total count in chunk
+# Each stack in a spawner counts toward the limit (not just 1 per spawner block)
+# Example: 1 spawner block with 64 stack + 1 spawner block with 6 stack = 70 total count in chunk
 max_spawners_per_chunk: 100
+
+# Verify actual spawner count in chunk before checking limits
+# When enabled, the plugin will count all spawner stacks in the chunk using SmartSpawner API
+# This is useful for servers that already had spawners before installing this addon
+# Recommended: Keep enabled until all chunks have correct counts, then disable to save performance
+verify_chunk_count_on_check: true

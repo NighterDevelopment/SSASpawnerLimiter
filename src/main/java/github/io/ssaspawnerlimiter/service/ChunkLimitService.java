@@ -3,11 +3,14 @@ package github.io.ssaspawnerlimiter.service;
 import github.io.ssaspawnerlimiter.SSASpawnerLimiter;
 import github.io.ssaspawnerlimiter.database.DatabaseManager;
 import github.io.ssaspawnerlimiter.util.ChunkKey;
+import github.nighter.smartspawner.api.SmartSpawnerAPI;
+import github.nighter.smartspawner.api.data.SpawnerDataDTO;
 import lombok.Getter;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,6 +24,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ChunkLimitService {
     private final SSASpawnerLimiter plugin;
     private final DatabaseManager databaseManager;
+    private final SmartSpawnerAPI api;
 
     // Thread-safe cache for chunk spawner counts
     private final Map<ChunkKey, CacheEntry> chunkCache;
@@ -28,18 +32,23 @@ public class ChunkLimitService {
 
     @Getter
     private int maxSpawnersPerChunk;
+    @Getter
+    private boolean verifyChunkCountOnCheck;
     private final long cacheExpirationMs = 300 * 1000L; // 5 minutes
 
     public ChunkLimitService(SSASpawnerLimiter plugin, DatabaseManager databaseManager) {
         this.plugin = plugin;
         this.databaseManager = databaseManager;
+        this.api = plugin.getApi();
         this.chunkCache = new ConcurrentHashMap<>();
         loadSpawnerLimit();
     }
 
     public void loadSpawnerLimit() {
         this.maxSpawnersPerChunk = plugin.getConfig().getInt("max_spawners_per_chunk", 100);
+        this.verifyChunkCountOnCheck = plugin.getConfig().getBoolean("verify_chunk_count_on_check", true);
         plugin.getLogger().info("Max spawners per chunk set to " + maxSpawnersPerChunk);
+        plugin.getLogger().info("Verify chunk count on check: " + verifyChunkCountOnCheck);
     }
 
     /**
@@ -69,6 +78,14 @@ public class ChunkLimitService {
      * @return current count
      */
     public int getSpawnerCount(ChunkKey key) {
+        // If verification is enabled, verify actual count from SmartSpawner API
+        if (verifyChunkCountOnCheck) {
+            int actualCount = verifyAndUpdateChunkCount(key);
+            if (actualCount >= 0) {
+                return actualCount;
+            }
+        }
+
         CacheEntry cached = getCachedCount(key);
         if (cached != null && !cached.isExpired()) {
             return cached.count;
@@ -82,6 +99,57 @@ public class ChunkLimitService {
         } catch (Exception e) {
             plugin.getLogger().warning("Error getting spawner count for chunk " + key + ": " + e.getMessage());
             return 0;
+        }
+    }
+
+    /**
+     * Verify and update chunk count by checking actual spawners in the chunk
+     * Uses SmartSpawner API to get all spawners and filter by chunk
+     * This is thread-safe and optimized for performance
+     *
+     * @param key The chunk key to verify
+     * @return actual count, or -1 if verification failed
+     */
+    private int verifyAndUpdateChunkCount(ChunkKey key) {
+        try {
+            // Get all spawners from API (cached by SmartSpawner)
+            List<SpawnerDataDTO> allSpawners = api.getAllSpawners();
+
+            if (allSpawners == null) {
+                return -1;
+            }
+
+            // Filter spawners in this chunk and sum their stack sizes
+            int actualCount = allSpawners.stream()
+                .filter(spawner -> {
+                    Location loc = spawner.getLocation();
+                    return loc != null
+                        && loc.getWorld() != null
+                        && loc.getWorld().getName().equals(key.world())
+                        && (loc.getBlockX() >> 4) == key.x()
+                        && (loc.getBlockZ() >> 4) == key.z();
+                })
+                .mapToInt(SpawnerDataDTO::getStackSize)
+                .sum();
+
+            // Update database and cache with actual count
+            databaseManager.setSpawnerCount(key.world(), key.x(), key.z(), actualCount)
+                .thenAccept(success -> {
+                    if (success) {
+                        updateCache(key, actualCount);
+                        if (plugin.getConfig().getBoolean("debug", false)) {
+                            plugin.getLogger().info(String.format(
+                                "[VERIFY] Chunk %s actual count: %d", key, actualCount
+                            ));
+                        }
+                    }
+                });
+
+            return actualCount;
+
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error verifying chunk count for " + key + ": " + e.getMessage());
+            return -1;
         }
     }
 

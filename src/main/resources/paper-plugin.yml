@@ -19,9 +19,13 @@ permissions:
     description: "Base permission for SSASpawnerLimiter commands, must have to use any command"
     default: op
 
+  ssaspawnerlimiter.command.check:
+    description: "Check spawner limit for a specific player"
+    default: op
+
   ssaspawnerlimiter.command.info:
     description: "Check spawner count in current chunk"
-    default: true
+    default: op
 
   ssaspawnerlimiter.command.reload:
     description: "Reload plugin configuration"
