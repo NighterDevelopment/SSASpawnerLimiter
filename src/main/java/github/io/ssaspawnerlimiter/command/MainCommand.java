@@ -72,12 +72,7 @@ public class MainCommand {
         // Add execute handler for when no subcommand is provided (show usage)
         builder.executes(context -> {
             CommandSender sender = context.getSource().getSender();
-            sender.sendMessage("§6§l━━━━━ §e§lSSA Spawner Limiter §6§l━━━━━");
-            sender.sendMessage("§fAvailable commands:");
-            for (BaseSubCommand subCommand : subCommands) {
-                sender.sendMessage("§8  • §e/" + name + " " + subCommand.getName() + " §7- §f" + subCommand.getDescription());
-            }
-            sender.sendMessage("§6§l━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            messageService.sendMessage(sender, "command_usage_main");
             return 1;
         });
 

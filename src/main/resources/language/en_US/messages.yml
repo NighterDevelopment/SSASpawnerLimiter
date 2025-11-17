@@ -20,6 +20,20 @@ command_info_location:
 command_info_bypass:
   message: "  &#f8f8ff• &#ffd580ʙʏᴘᴀꜱꜱ: &#ff8c42{bypass}"
 
+# Command messages - Check
+command_check_result:
+  message: "&#37eb9aᴘʟᴀʏᴇʀ &#ff8c42{player}&#37eb9a'ꜱ ᴄʜᴜɴᴋ ʜᴀꜱ &#ff8c42{current}&#37eb9a/&#ff8c42{limit} &#37eb9aꜱᴘᴀᴡɴᴇʀꜱ"
+
+command_check_player_not_found:
+  message: "&#ff5252ᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ ᴏʀ ɴᴏᴛ ᴏɴʟɪɴᴇ!"
+
+# Command messages - Usage
+command_usage_check:
+  message: "&#ff5252ᴜꜱᴀɢᴇ: &#f8f8ff/ssaspawnerlimiter check <player>"
+
+command_usage_main:
+  message: "&#ffb347━━━━━ &#ffd580ꜱꜱᴀ ꜱᴘᴀᴡɴᴇʀ ʟɪᴍɪᴛᴇʀ &#ffb347━━━━━\n&#f8f8ffᴀᴠᴀɪʟᴀʙʟᴇ ᴄᴏᴍᴍᴀɴᴅꜱ:\n  &#ff8c42• &#ffd580/ssaspawnerlimiter reload &#f8f8ff- &#7fʀᴇʟᴏᴀᴅ ᴛʜᴇ ᴘʟᴜɢɪɴ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ\n  &#ff8c42• &#ffd580/ssaspawnerlimiter info &#f8f8ff- &#7fᴄʜᴇᴄᴋ ꜱᴘᴀᴡɴᴇʀ ᴄᴏᴜɴᴛ ɪɴ ᴄᴜʀʀᴇɴᴛ ᴄʜᴜɴᴋ\n  &#ff8c42• &#ffd580/ssaspawnerlimiter check <player> &#f8f8ff- &#7fᴄʜᴇᴄᴋ ᴘʟᴀʏᴇʀ'ꜱ ᴄʜᴜɴᴋ ꜱᴘᴀᴡɴᴇʀꜱ\n  &#ff8c42• &#ffd580/ssaspawnerlimiter stats &#f8f8ff- &#7fᴠɪᴇᴡ ꜱᴛᴀᴛɪꜱᴛɪᴄꜱ\n&#ffb347━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
 # Command messages - Reload
 command_reload:
   message: "&#ffd580ʀᴇʟᴏᴀᴅɪɴɢ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ..."
@@ -55,3 +69,7 @@ no_permission:
 
 player_only:
   message: "&#ff5252ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ᴄᴀɴ ᴏɴʟʏ ʙᴇ ᴜꜱᴇᴅ ʙʏ ᴘʟᴀʏᴇʀꜱ!"
+
+stats_error:
+  message: "&#ff5252ᴇʀʀᴏʀ ꜰᴇᴛᴄʜɪɴɢ ꜱᴛᴀᴛɪꜱᴛɪᴄꜱ: &#f8f8ff{error}"
+

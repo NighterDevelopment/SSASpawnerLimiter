@@ -15,13 +15,9 @@ permissions:
     description: "Bypass spawner chunk limit"
     default: false
 
-  ssaspawnerlimiter.command.*:
-    description: "Access to all SSASpawnerLimiter commands"
+  ssaspawnerlimiter.command.use:
+    description: "Base permission for SSASpawnerLimiter commands, must have to use any command"
     default: op
-    children:
-      ssaspawnerlimiter.command.info: true
-      ssaspawnerlimiter.command.reload: true
-      ssaspawnerlimiter.command.stats: true
 
   ssaspawnerlimiter.command.info:
     description: "Check spawner count in current chunk"

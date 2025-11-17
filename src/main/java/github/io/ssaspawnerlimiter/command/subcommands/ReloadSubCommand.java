@@ -44,6 +44,7 @@ public class ReloadSubCommand extends BaseSubCommand {
 
             // Clear cache
             if (plugin.getChunkLimitService() != null) {
+                plugin.getChunkLimitService().loadSpawnerLimit();
                 plugin.getChunkLimitService().clearCache();
             }
 

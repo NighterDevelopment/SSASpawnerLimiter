@@ -62,7 +62,7 @@ public class CheckSubCommand extends BaseSubCommand {
     @Override
     public int execute(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
-        sender.sendMessage("§cUsage: /ssaspawnerlimiter check <player>");
+        plugin.getMessageService().sendMessage(sender, "command_usage_check");
         return 0;
     }
 
@@ -72,7 +72,7 @@ public class CheckSubCommand extends BaseSubCommand {
 
         Player target = Bukkit.getPlayer(playerName);
         if (target == null || !target.isOnline()) {
-            sender.sendMessage("§cPlayer not found or not online!");
+            plugin.getMessageService().sendMessage(sender, "command_check_player_not_found");
             return 0;
         }
 
@@ -85,14 +85,17 @@ public class CheckSubCommand extends BaseSubCommand {
             int limit = plugin.getChunkLimitService().getMaxSpawnersPerChunk();
 
             // Send message on appropriate thread
+            java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+            placeholders.put("player", target.getName());
+            placeholders.put("current", String.valueOf(count));
+            placeholders.put("limit", String.valueOf(limit));
+
             if (sender instanceof Player player) {
                 Scheduler.runAtLocation(player.getLocation(), () ->
-                    sender.sendMessage(String.format("§aPlayer %s's chunk has %d/%d spawners.",
-                        target.getName(), count, limit))
+                    plugin.getMessageService().sendMessage(sender, "command_check_result", placeholders)
                 );
             } else {
-                sender.sendMessage(String.format("§aPlayer %s's chunk has %d/%d spawners.",
-                    target.getName(), count, limit));
+                plugin.getMessageService().sendMessage(sender, "command_check_result", placeholders);
             }
         });
 

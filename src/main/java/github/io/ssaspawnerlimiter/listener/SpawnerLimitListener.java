@@ -63,10 +63,6 @@ public class SpawnerLimitListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpawnerBreak(SpawnerBreakEvent event) {
-        if (!plugin.getConfig().getBoolean("chunk-limit.enabled", true)) {
-            return;
-        }
-
         Location location = event.getLocation();
         int quantity = event.getQuantity();
 

@@ -71,7 +71,9 @@ public class StatsSubCommand extends BaseSubCommand {
                     sendMessages.run();
                 }
             } catch (Exception e) {
-                sender.sendMessage("§cError fetching statistics: " + e.getMessage());
+                java.util.Map<String, String> errorPlaceholders = new java.util.HashMap<>();
+                errorPlaceholders.put("error", e.getMessage());
+                plugin.getMessageService().sendMessage(sender, "stats_error", errorPlaceholders);
             }
         });
 

@@ -27,19 +27,19 @@ public class ChunkLimitService {
     private final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     @Getter
-    private final int maxSpawnersPerChunk;
-    private final boolean cacheEnabled;
-    private final long cacheExpirationMs;
+    private int maxSpawnersPerChunk;
+    private final long cacheExpirationMs = 300 * 1000L; // 5 minutes
 
     public ChunkLimitService(SSASpawnerLimiter plugin, DatabaseManager databaseManager) {
         this.plugin = plugin;
         this.databaseManager = databaseManager;
         this.chunkCache = new ConcurrentHashMap<>();
+        loadSpawnerLimit();
+    }
 
-        // Load config values
-        this.maxSpawnersPerChunk = plugin.getConfig().getInt("chunk-limit.max-spawners-per-chunk", 100);
-        this.cacheEnabled = plugin.getConfig().getBoolean("performance.cache-enabled", true);
-        this.cacheExpirationMs = plugin.getConfig().getInt("performance.cache-expiration", 300) * 1000L;
+    public void loadSpawnerLimit() {
+        this.maxSpawnersPerChunk = plugin.getConfig().getInt("max_spawners_per_chunk", 100);
+        plugin.getLogger().info("Max spawners per chunk set to " + maxSpawnersPerChunk);
     }
 
     /**
@@ -69,19 +69,15 @@ public class ChunkLimitService {
      * @return current count
      */
     public int getSpawnerCount(ChunkKey key) {
-        if (cacheEnabled) {
-            CacheEntry cached = getCachedCount(key);
-            if (cached != null && !cached.isExpired()) {
-                return cached.count;
-            }
+        CacheEntry cached = getCachedCount(key);
+        if (cached != null && !cached.isExpired()) {
+            return cached.count;
         }
 
         // Cache miss or expired, fetch from database synchronously
         try {
             int count = databaseManager.getSpawnerCount(key.world(), key.x(), key.z()).get();
-            if (cacheEnabled) {
-                updateCache(key, count);
-            }
+            updateCache(key, count);
             return count;
         } catch (Exception e) {
             plugin.getLogger().warning("Error getting spawner count for chunk " + key + ": " + e.getMessage());
@@ -100,9 +96,7 @@ public class ChunkLimitService {
 
         databaseManager.incrementSpawnerCount(key.world(), key.x(), key.z(), quantity)
             .thenAccept(newCount -> {
-                if (cacheEnabled) {
-                    updateCache(key, newCount);
-                }
+                updateCache(key, newCount);
             });
     }
 
@@ -135,7 +129,7 @@ public class ChunkLimitService {
     public CompletableFuture<Boolean> setSpawnerCount(ChunkKey key, int count) {
         return databaseManager.setSpawnerCount(key.world(), key.x(), key.z(), count)
             .thenApply(success -> {
-                if (success && cacheEnabled) {
+                if (success) {
                     updateCache(key, count);
                 }
                 return success;
