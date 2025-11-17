@@ -69,13 +69,6 @@ public class MainCommand {
             return sender.hasPermission("ssaspawnerlimiter.command.use");
         });
 
-        // Add execute handler for when no subcommand is provided (show usage)
-        builder.executes(context -> {
-            CommandSender sender = context.getSource().getSender();
-            messageService.sendMessage(sender, "command_usage_main");
-            return 1;
-        });
-
         // Add all subcommands to the builder
         for (BaseSubCommand subCommand : subCommands) {
             builder.then(subCommand.build());

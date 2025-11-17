@@ -31,9 +31,6 @@ command_check_player_not_found:
 command_usage_check:
   message: "&#ff5252ᴜꜱᴀɢᴇ: &#f8f8ff/ssaspawnerlimiter check <player>"
 
-command_usage_main:
-  message: "&#ffb347━━━━━ &#ffd580ꜱꜱᴀ ꜱᴘᴀᴡɴᴇʀ ʟɪᴍɪᴛᴇʀ &#ffb347━━━━━\n&#f8f8ffᴀᴠᴀɪʟᴀʙʟᴇ ᴄᴏᴍᴍᴀɴᴅꜱ:\n  &#ff8c42• &#ffd580/ssaspawnerlimiter reload &#f8f8ff- &#7fʀᴇʟᴏᴀᴅ ᴛʜᴇ ᴘʟᴜɢɪɴ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ\n  &#ff8c42• &#ffd580/ssaspawnerlimiter info &#f8f8ff- &#7fᴄʜᴇᴄᴋ ꜱᴘᴀᴡɴᴇʀ ᴄᴏᴜɴᴛ ɪɴ ᴄᴜʀʀᴇɴᴛ ᴄʜᴜɴᴋ\n  &#ff8c42• &#ffd580/ssaspawnerlimiter check <player> &#f8f8ff- &#7fᴄʜᴇᴄᴋ ᴘʟᴀʏᴇʀ'ꜱ ᴄʜᴜɴᴋ ꜱᴘᴀᴡɴᴇʀꜱ\n  &#ff8c42• &#ffd580/ssaspawnerlimiter stats &#f8f8ff- &#7fᴠɪᴇᴡ ꜱᴛᴀᴛɪꜱᴛɪᴄꜱ\n&#ffb347━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
 # Command messages - Reload
 command_reload:
   message: "&#ffd580ʀᴇʟᴏᴀᴅɪɴɢ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ..."

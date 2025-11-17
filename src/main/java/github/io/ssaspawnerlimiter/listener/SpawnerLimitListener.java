@@ -4,7 +4,7 @@ import github.io.ssaspawnerlimiter.SSASpawnerLimiter;
 import github.io.ssaspawnerlimiter.Scheduler;
 import github.io.ssaspawnerlimiter.service.ChunkLimitService;
 import github.io.ssaspawnerlimiter.util.ChunkKey;
-import github.nighter.smartspawner.api.events.SpawnerBreakEvent;
+import github.nighter.smartspawner.api.events.SpawnerPlayerBreakEvent;
 import github.nighter.smartspawner.api.events.SpawnerPlaceEvent;
 import github.nighter.smartspawner.api.events.SpawnerRemoveEvent;
 import github.nighter.smartspawner.api.events.SpawnerStackEvent;
@@ -62,7 +62,7 @@ public class SpawnerLimitListener implements Listener {
      * Handle spawner break - decrease count
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onSpawnerBreak(SpawnerBreakEvent event) {
+    public void onSpawnerBreak(SpawnerPlayerBreakEvent event) {
         Location location = event.getLocation();
         int quantity = event.getQuantity();
 

@@ -89,8 +89,6 @@ public class DatabaseManager {
                 );
                 """;
             stmt.execute(createMetaTableSQL);
-
-            plugin.getLogger().info("Database tables created/verified successfully");
         } finally {
             lock.writeLock().unlock();
         }
