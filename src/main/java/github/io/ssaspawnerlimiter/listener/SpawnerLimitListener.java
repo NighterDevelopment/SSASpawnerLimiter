@@ -85,8 +85,8 @@ public class SpawnerLimitListener implements Listener {
     public void onSpawnerStack(SpawnerStackEvent event) {
         Player player = event.getPlayer();
         Location location = event.getLocation();
-        int oldQuantity = event.getOldQuantity();
-        int newQuantity = event.getNewQuantity();
+        int oldQuantity = event.getOldStackSize();
+        int newQuantity = event.getNewStackSize();
         int difference = newQuantity - oldQuantity;
 
         // Only check if we're adding to the stack
@@ -117,8 +117,8 @@ public class SpawnerLimitListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpawnerStackComplete(SpawnerStackEvent event) {
         Location location = event.getLocation();
-        int oldQuantity = event.getOldQuantity();
-        int newQuantity = event.getNewQuantity();
+        int oldQuantity = event.getOldStackSize();
+        int newQuantity = event.getNewStackSize();
 
         // Update count asynchronously
         limitService.updateStackCount(location, oldQuantity, newQuantity);
