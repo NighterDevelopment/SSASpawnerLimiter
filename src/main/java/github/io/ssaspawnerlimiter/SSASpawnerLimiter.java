@@ -17,7 +17,6 @@ import io.github.pluginupdatecore.updater.ConfigUpdater;
 import github.nighter.smartspawner.api.SmartSpawnerAPI;
 import github.nighter.smartspawner.api.SmartSpawnerProvider;
 
-import java.util.List;
 import java.util.logging.Level;
 
 @Getter
