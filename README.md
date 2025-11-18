@@ -15,7 +15,7 @@ SSAddon (SmartSpawner Addon) that limits spawner placement per chunk based on sp
 
 ## 📦 Installation
 
-1. Install [SmartSpawner](https://www.spigotmc.org/resources/smartspawner.109862/) plugin
+1. Install [SmartSpawner](https://modrinth.com/plugin/smart-spawner-plugin) plugin
 2. Download SSASpawnerLimiter
 3. Place the `.jar` file in your `plugins` folder
 4. Restart the server
