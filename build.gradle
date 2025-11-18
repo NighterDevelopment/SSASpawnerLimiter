@@ -71,7 +71,7 @@ shadowJar {
     minimize()
 
     exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
-    destinationDirectory = file('C:\\Users\\notni\\OneDrive\\Desktop\\paper_1.21.8\\plugins')
+    // destinationDirectory = file('C:\\Users\\notni\\OneDrive\\Desktop\\paper_1.21.8\\plugins')
 }
 
 build {
