@@ -24,7 +24,7 @@ import java.util.logging.Level;
 public final class SSASpawnerLimiter extends JavaPlugin {
     @Getter
     private static SSASpawnerLimiter instance;
-    private final static String MODRINTH_PROJECT_ID = "";
+    private final static String MODRINTH_PROJECT_ID = "JF5xsqCk";
     private LanguageSystem languageSystem;
     private LanguageManager languageManager;
     private MessageService messageService;
