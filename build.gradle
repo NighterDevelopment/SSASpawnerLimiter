@@ -23,8 +23,8 @@ dependencies {
     compileOnly("com.github.NighterDevelopment:SmartSpawner:1.5.7.1")
 
     // Shadowed dependencies
-    implementation("com.github.NighterDevelopment:PluginUpdateCore:1.0.0")
-    implementation("com.github.NighterDevelopment:PluginLangCore:1.0.0")
+    implementation("com.github.NighterDevelopment:PluginUpdateCore:1.0.1")
+    implementation("com.github.NighterDevelopment:PluginLangCore:1.0.2")
 }
 
 java {
@@ -72,7 +72,7 @@ shadowJar {
     minimize()
 
     exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
-    destinationDirectory = file('C:\\Users\\notni\\OneDrive\\Desktop\\paper_1.21.8\\plugins')
+    // destinationDirectory = file('C:\\Users\\notni\\OneDrive\\Desktop\\paper_1.21.8\\plugins')
 }
 
 build {

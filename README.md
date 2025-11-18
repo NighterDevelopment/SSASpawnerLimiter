@@ -1,6 +1,6 @@
-# 🎯 SSA SpawnerLimiter
+# 🎯 SSAddon SpawnerLimiter
 
-SSA (SmartSpawner Addon) that limits spawner placement per chunk based on spawner stacks, with Folia support!
+SSAddon (SmartSpawner Addon) that limits spawner placement per chunk based on spawner stacks, with Folia support!
 
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.4+-green.svg)](https://www.minecraft.net/)
 [![Paper](https://img.shields.io/badge/Server-Paper%20%7C%20Folia-blue.svg)](https://papermc.io/)
@@ -49,6 +49,14 @@ SSASpawnerLimiter counts **spawner stacks** instead of just spawner blocks:
 - **Total in chunk**: 70 count
 
 This ensures fair limiting based on actual spawner capacity, not just physical blocks.
+
+## 🗄️ Database
+
+The plugin uses SQLite to store spawner chunk data. You can view and manage the database using:
+
+**[SQLite Viewer](https://sqliteviewer.app/)** - A free online tool to view and edit SQLite databases
+
+Database location: `plugins/SSASpawnerLimiter/spawner_limits.db`
 
 ## 📄 License
 

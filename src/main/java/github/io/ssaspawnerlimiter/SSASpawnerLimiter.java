@@ -10,7 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import io.github.pluginlangcore.language.LanguageManager;
 import io.github.pluginlangcore.language.MessageService;
-import io.github.pluginlangcore.updater.LanguageUpdater;
+import io.github.pluginlangcore.LanguageSystem;
+import io.github.pluginlangcore.LanguageSystem.LanguageFileType;
 import io.github.pluginupdatecore.updater.UpdateChecker;
 import io.github.pluginupdatecore.updater.ConfigUpdater;
 import github.nighter.smartspawner.api.SmartSpawnerAPI;
@@ -25,7 +26,7 @@ public final class SSASpawnerLimiter extends JavaPlugin {
     @Getter
     private static SSASpawnerLimiter instance;
     private final static String MODRINTH_PROJECT_ID = "";
-
+    private LanguageSystem languageSystem;
     private LanguageManager languageManager;
     private MessageService messageService;
     private SmartSpawnerAPI api;
@@ -60,11 +61,13 @@ public final class SSASpawnerLimiter extends JavaPlugin {
     }
 
     private void initializeLanguageSystem() {
-        new LanguageUpdater(this, List.of("en_US"));
-        languageManager = new LanguageManager(this,
-                LanguageManager.LanguageFileType.MESSAGES
-        );
-        messageService = new MessageService(this, languageManager);
+        languageSystem = LanguageSystem.builder(this)
+                .defaultLocale("en_US")
+                .fileTypes(LanguageFileType.MESSAGES)
+                .build();
+
+        languageManager = languageSystem.getLanguageManager();
+        messageService = languageSystem.getMessageService();
     }
 
     private void initializeDatabase() {
