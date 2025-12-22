@@ -5,7 +5,7 @@ plugins {
     id 'com.gradleup.shadow' version '9.3.0'
 }
 group = 'github.io'
-version = '1.0.1'
+version = '1.0.2'
 
 repositories {
     mavenCentral()
