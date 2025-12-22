@@ -78,6 +78,16 @@ public class DatabaseManager {
                 """;
             stmt.execute(createIndexSQL);
 
+            // Table for per-player spawner counts
+            String createPlayerTableSQL = """
+                CREATE TABLE IF NOT EXISTS player_spawners (
+                    uuid TEXT PRIMARY KEY,
+                    spawner_count INTEGER NOT NULL DEFAULT 0,
+                    last_updated INTEGER NOT NULL
+                );
+                """;
+            stmt.execute(createPlayerTableSQL);
+
             // Metadata table for future use
             String createMetaTableSQL = """
                 CREATE TABLE IF NOT EXISTS limiter_metadata (
@@ -294,6 +304,121 @@ public class DatabaseManager {
                 return 0;
             } finally {
                 lock.readLock().unlock();
+            }
+        });
+    }
+
+    /**
+     * Get player spawner count
+     * @param uuid Player UUID
+     * @return CompletableFuture with spawner count
+     */
+    public CompletableFuture<Integer> getPlayerSpawnerCount(String uuid) {
+        return CompletableFuture.supplyAsync(() -> {
+            lock.readLock().lock();
+            try {
+                String sql = "SELECT spawner_count FROM player_spawners WHERE uuid = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                    stmt.setString(1, uuid);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        return rs.getInt("spawner_count");
+                    }
+                    return 0;
+                }
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "Error getting player spawner count", e);
+                return 0;
+            } finally {
+                lock.readLock().unlock();
+            }
+        });
+    }
+
+    /**
+     * Set player spawner count
+     * @param uuid Player UUID
+     * @param count New spawner count
+     * @return CompletableFuture indicating success
+     */
+    public CompletableFuture<Boolean> setPlayerSpawnerCount(String uuid, int count) {
+        return CompletableFuture.supplyAsync(() -> {
+            lock.writeLock().lock();
+            try {
+                String sql = """
+                    INSERT INTO player_spawners (uuid, spawner_count, last_updated)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT(uuid) 
+                    DO UPDATE SET spawner_count = ?, last_updated = ?
+                    """;
+
+                long timestamp = System.currentTimeMillis();
+                try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                    stmt.setString(1, uuid);
+                    stmt.setInt(2, count);
+                    stmt.setLong(3, timestamp);
+                    stmt.setInt(4, count);
+                    stmt.setLong(5, timestamp);
+                    stmt.executeUpdate();
+                    return true;
+                }
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "Error setting player spawner count", e);
+                return false;
+            } finally {
+                lock.writeLock().unlock();
+            }
+        });
+    }
+
+    /**
+     * Increment player spawner count
+     * @param uuid Player UUID
+     * @param amount Amount to increment by (can be negative)
+     * @return CompletableFuture with new count
+     */
+    public CompletableFuture<Integer> incrementPlayerSpawnerCount(String uuid, int amount) {
+        return CompletableFuture.supplyAsync(() -> {
+            lock.writeLock().lock();
+            try {
+                // First, get current count
+                int currentCount = 0;
+                String selectSQL = "SELECT spawner_count FROM player_spawners WHERE uuid = ?";
+                try (PreparedStatement stmt = connection.prepareStatement(selectSQL)) {
+                    stmt.setString(1, uuid);
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        currentCount = rs.getInt("spawner_count");
+                    }
+                }
+
+                // Calculate new count (floor at 0)
+                int newCount = Math.max(0, currentCount + amount);
+
+                // Update with new count
+                String updateSQL = """
+                    INSERT INTO player_spawners (uuid, spawner_count, last_updated)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT(uuid) 
+                    DO UPDATE SET spawner_count = ?, last_updated = ?
+                    """;
+
+                long timestamp = System.currentTimeMillis();
+                try (PreparedStatement stmt = connection.prepareStatement(updateSQL)) {
+                    stmt.setString(1, uuid);
+                    stmt.setInt(2, newCount);
+                    stmt.setLong(3, timestamp);
+                    stmt.setInt(4, newCount);
+                    stmt.setLong(5, timestamp);
+                    stmt.executeUpdate();
+                }
+
+                return newCount;
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "Error incrementing player spawner count", e);
+                return -1;
+            } finally {
+                lock.writeLock().unlock();
             }
         });
     }

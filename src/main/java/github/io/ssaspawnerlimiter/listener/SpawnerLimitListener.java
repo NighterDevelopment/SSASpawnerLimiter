@@ -3,6 +3,7 @@ package github.io.ssaspawnerlimiter.listener;
 import github.io.ssaspawnerlimiter.SSASpawnerLimiter;
 import github.io.ssaspawnerlimiter.Scheduler;
 import github.io.ssaspawnerlimiter.service.ChunkLimitService;
+import github.io.ssaspawnerlimiter.service.PlayerLimitService;
 import github.io.ssaspawnerlimiter.util.ChunkKey;
 import github.nighter.smartspawner.api.events.SpawnerPlayerBreakEvent;
 import github.nighter.smartspawner.api.events.SpawnerPlaceEvent;
@@ -16,18 +17,21 @@ import org.bukkit.event.Listener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
- * Event listener for SmartSpawner events to enforce chunk limits.
+ * Event listener for SmartSpawner events to enforce chunk and player limits.
  * Designed to be thread-safe and work with Folia's region-based threading.
  */
 public class SpawnerLimitListener implements Listener {
     private final SSASpawnerLimiter plugin;
-    private final ChunkLimitService limitService;
+    private final ChunkLimitService chunkLimitService;
+    private final PlayerLimitService playerLimitService;
 
-    public SpawnerLimitListener(SSASpawnerLimiter plugin, ChunkLimitService limitService) {
+    public SpawnerLimitListener(SSASpawnerLimiter plugin, ChunkLimitService chunkLimitService, PlayerLimitService playerLimitService) {
         this.plugin = plugin;
-        this.limitService = limitService;
+        this.chunkLimitService = chunkLimitService;
+        this.playerLimitService = playerLimitService;
     }
 
     /**
@@ -38,24 +42,43 @@ public class SpawnerLimitListener implements Listener {
         Player player = event.getPlayer();
         Location location = event.getLocation();
         int quantity = event.getQuantity();
+        UUID playerUUID = player.getUniqueId();
 
-        // Check limit synchronously for immediate cancellation
-        boolean canPlace = limitService.canPlaceSpawner(player, location, quantity);
+        // Check chunk limit synchronously for immediate cancellation
+        boolean canPlaceChunk = chunkLimitService.canPlaceSpawner(player, location, quantity);
 
-        if (!canPlace) {
+        if (!canPlaceChunk) {
             event.setCancelled(true);
 
-            // Send message to player on their region thread
+            // Send chunk limit message to player on their region thread
             Scheduler.runAtLocation(player.getLocation(), () -> {
                 Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("limit", String.valueOf(limitService.getMaxSpawnersPerChunk()));
-                placeholders.put("current", String.valueOf(limitService.getSpawnerCount(new ChunkKey(location))));
-                plugin.getMessageService().sendMessage(player, "limit_reached", placeholders);
+                placeholders.put("limit", String.valueOf(chunkLimitService.getMaxSpawnersPerChunk()));
+                placeholders.put("current", String.valueOf(chunkLimitService.getSpawnerCount(new ChunkKey(location))));
+                plugin.getMessageService().sendMessage(player, "chunk_limit_reached", placeholders);
             });
-        } else {
-            // Update count in database asynchronously (in background)
-            limitService.addSpawners(location, quantity);
+            return;
         }
+
+        // Check player limit synchronously for immediate cancellation
+        boolean canPlacePlayer = playerLimitService.canPlaceSpawner(player, quantity);
+
+        if (!canPlacePlayer) {
+            event.setCancelled(true);
+
+            // Send player limit message to player on their region thread
+            Scheduler.runAtLocation(player.getLocation(), () -> {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("limit", String.valueOf(playerLimitService.getPlayerLimit(player)));
+                placeholders.put("current", String.valueOf(playerLimitService.getPlayerSpawnerCount(playerUUID)));
+                plugin.getMessageService().sendMessage(player, "player_limit_reached", placeholders);
+            });
+            return;
+        }
+
+        // Both limits passed - Update counts in database asynchronously (in background)
+        chunkLimitService.addSpawners(location, quantity);
+        playerLimitService.addSpawners(playerUUID, quantity);
     }
 
     /**
@@ -63,19 +86,22 @@ public class SpawnerLimitListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpawnerBreak(SpawnerPlayerBreakEvent event) {
+        Player player = event.getPlayer();
         Location location = event.getLocation();
         int quantity = event.getQuantity();
+        UUID playerUUID = player.getUniqueId();
 
         if (plugin.getConfig().getBoolean("debug", false)) {
             String entityName = event.getEntity() != null ? event.getEntity().getName() : "Unknown";
             plugin.getLogger().info(String.format(
-                "[DEBUG] SpawnerBreakEvent - Entity: %s, Quantity: %d, Chunk: %s",
-                entityName, quantity, new ChunkKey(location)
+                "[DEBUG] SpawnerBreakEvent - Player: %s, Entity: %s, Quantity: %d, Chunk: %s",
+                player.getName(), entityName, quantity, new ChunkKey(location)
             ));
         }
 
-        // Update count asynchronously in background
-        limitService.removeSpawners(location, quantity);
+        // Update counts asynchronously in background
+        chunkLimitService.removeSpawners(location, quantity);
+        playerLimitService.removeSpawners(playerUUID, quantity);
     }
 
     /**
@@ -88,25 +114,42 @@ public class SpawnerLimitListener implements Listener {
         int oldQuantity = event.getOldStackSize();
         int newQuantity = event.getNewStackSize();
         int difference = newQuantity - oldQuantity;
+        UUID playerUUID = player.getUniqueId();
 
         // Only check if we're adding to the stack
         if (difference <= 0) {
             return;
         }
 
-        // Check if adding would exceed limit (SYNC for immediate cancel)
-        boolean canStack = limitService.canPlaceSpawner(player, location, difference);
+        // Check if adding would exceed chunk limit (SYNC for immediate cancel)
+        boolean canStackChunk = chunkLimitService.canPlaceSpawner(player, location, difference);
 
-        if (!canStack) {
+        if (!canStackChunk) {
             event.setCancelled(true);
 
-            // Send message to player on their region thread
+            // Send chunk limit message to player on their region thread
             Scheduler.runAtLocation(player.getLocation(), () -> {
-                int currentCount = limitService.getSpawnerCount(new ChunkKey(location));
+                int currentCount = chunkLimitService.getSpawnerCount(new ChunkKey(location));
                 Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("limit", String.valueOf(limitService.getMaxSpawnersPerChunk()));
+                placeholders.put("limit", String.valueOf(chunkLimitService.getMaxSpawnersPerChunk()));
                 placeholders.put("current", String.valueOf(currentCount));
-                plugin.getMessageService().sendMessage(player, "limit_reached", placeholders);
+                plugin.getMessageService().sendMessage(player, "chunk_limit_reached", placeholders);
+            });
+            return;
+        }
+
+        // Check if adding would exceed player limit (SYNC for immediate cancel)
+        boolean canStackPlayer = playerLimitService.canPlaceSpawner(player, difference);
+
+        if (!canStackPlayer) {
+            event.setCancelled(true);
+
+            // Send player limit message to player on their region thread
+            Scheduler.runAtLocation(player.getLocation(), () -> {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("limit", String.valueOf(playerLimitService.getPlayerLimit(player)));
+                placeholders.put("current", String.valueOf(playerLimitService.getPlayerSpawnerCount(playerUUID)));
+                plugin.getMessageService().sendMessage(player, "player_limit_reached", placeholders);
             });
         }
     }
@@ -116,12 +159,15 @@ public class SpawnerLimitListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpawnerStackComplete(SpawnerStackEvent event) {
+        Player player = event.getPlayer();
         Location location = event.getLocation();
         int oldQuantity = event.getOldStackSize();
         int newQuantity = event.getNewStackSize();
+        UUID playerUUID = player.getUniqueId();
 
-        // Update count asynchronously
-        limitService.updateStackCount(location, oldQuantity, newQuantity);
+        // Update counts asynchronously
+        chunkLimitService.updateStackCount(location, oldQuantity, newQuantity);
+        playerLimitService.updateStackCount(playerUUID, oldQuantity, newQuantity);
     }
 
     /**
@@ -129,11 +175,14 @@ public class SpawnerLimitListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpawnerRemove(SpawnerRemoveEvent event) {
+        Player player = event.getPlayer();
         Location location = event.getLocation();
         int changeAmount = event.getChangeAmount();
+        UUID playerUUID = player.getUniqueId();
 
         // changeAmount is the difference (can be negative when removing)
-        limitService.removeSpawners(location, Math.abs(changeAmount));
+        chunkLimitService.removeSpawners(location, Math.abs(changeAmount));
+        playerLimitService.removeSpawners(playerUUID, Math.abs(changeAmount));
     }
 }
 

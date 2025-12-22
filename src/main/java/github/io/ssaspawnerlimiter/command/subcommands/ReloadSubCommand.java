@@ -42,10 +42,16 @@ public class ReloadSubCommand extends BaseSubCommand {
             // Reinitialize language system
             plugin.getLanguageManager().reloadLanguages();
 
-            // Clear cache
+            // Reload and clear cache for chunk limit service
             if (plugin.getChunkLimitService() != null) {
                 plugin.getChunkLimitService().loadSpawnerLimit();
                 plugin.getChunkLimitService().clearCache();
+            }
+
+            // Reload and clear cache for player limit service
+            if (plugin.getPlayerLimitService() != null) {
+                plugin.getPlayerLimitService().loadConfiguration();
+                plugin.getPlayerLimitService().clearCache();
             }
 
             plugin.getMessageService().sendMessage(sender, "reload_success");

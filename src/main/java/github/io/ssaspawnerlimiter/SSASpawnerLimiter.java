@@ -4,6 +4,7 @@ import github.io.ssaspawnerlimiter.command.BrigadierCommandManager;
 import github.io.ssaspawnerlimiter.database.DatabaseManager;
 import github.io.ssaspawnerlimiter.listener.SpawnerLimitListener;
 import github.io.ssaspawnerlimiter.service.ChunkLimitService;
+import github.io.ssaspawnerlimiter.service.PlayerLimitService;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
@@ -31,6 +32,7 @@ public final class SSASpawnerLimiter extends JavaPlugin {
     private SmartSpawnerAPI api;
     private DatabaseManager databaseManager;
     private ChunkLimitService chunkLimitService;
+    private PlayerLimitService playerLimitService;
     private BrigadierCommandManager commandManager;
     private Scheduler.Task cacheCleanupTask;
 
@@ -39,9 +41,7 @@ public final class SSASpawnerLimiter extends JavaPlugin {
         if (api == null) {
             getLogger().warning("SmartSpawner not found! This addon requires SmartSpawner to work.");
             getServer().getPluginManager().disablePlugin(this);
-            return;
         }
-        getLogger().info("SmartSpawner found, integrated with SSA Spawner Limiter");
     }
 
     private void checkPluginUpdates() {
@@ -91,13 +91,17 @@ public final class SSASpawnerLimiter extends JavaPlugin {
         // Initialize chunk limit service
         chunkLimitService = new ChunkLimitService(this, databaseManager);
 
+        // Initialize player limit service
+        playerLimitService = new PlayerLimitService(this, databaseManager);
+
         // Register event listeners
-        Bukkit.getPluginManager().registerEvents(new SpawnerLimitListener(this, chunkLimitService), this);
+        Bukkit.getPluginManager().registerEvents(new SpawnerLimitListener(this, chunkLimitService, playerLimitService), this);
 
         // Start cache cleanup task (hardcoded: 5 minutes = 6000 ticks)
         long cleanupInterval = 6000L; // 5 minutes in ticks
         cacheCleanupTask = Scheduler.runTaskTimerAsync(() -> {
             chunkLimitService.cleanupExpiredCache();
+            playerLimitService.cleanupExpiredCache();
         }, cleanupInterval, cleanupInterval);
     }
 

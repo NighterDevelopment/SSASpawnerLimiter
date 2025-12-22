@@ -3,6 +3,7 @@ package github.io.ssaspawnerlimiter.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import github.io.ssaspawnerlimiter.SSASpawnerLimiter;
+import github.io.ssaspawnerlimiter.command.subcommands.CheckPlayerSubCommand;
 import github.io.ssaspawnerlimiter.command.subcommands.CheckSubCommand;
 import github.io.ssaspawnerlimiter.command.subcommands.InfoSubCommand;
 import github.io.ssaspawnerlimiter.command.subcommands.ReloadSubCommand;
@@ -33,6 +34,7 @@ public class MainCommand {
                 new ReloadSubCommand(plugin),
                 new InfoSubCommand(plugin),
                 new CheckSubCommand(plugin),
+                new CheckPlayerSubCommand(plugin),
                 new StatsSubCommand(plugin)
         );
     }

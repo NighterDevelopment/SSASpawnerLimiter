@@ -12,12 +12,20 @@ permissions:
     description: "Bypass spawner chunk limit"
     default: false
 
+  ssaspawnerlimiter.perplayer.bypass:
+    description: "Bypass per-player spawner limit (unlimited spawners)"
+    default: false
+
   ssaspawnerlimiter.command.use:
     description: "Base permission for SSASpawnerLimiter commands, must have to use any command"
     default: op
 
   ssaspawnerlimiter.command.check:
-    description: "Check spawner limit for a specific player"
+    description: "Check spawner limit for a specific player's chunk"
+    default: op
+
+  ssaspawnerlimiter.command.checkplayer:
+    description: "Check per-player spawner count"
     default: op
 
   ssaspawnerlimiter.command.info:

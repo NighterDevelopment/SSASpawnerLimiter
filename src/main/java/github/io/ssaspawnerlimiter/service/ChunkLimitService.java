@@ -31,6 +31,8 @@ public class ChunkLimitService {
     private final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     @Getter
+    private boolean enabled;
+    @Getter
     private int maxSpawnersPerChunk;
     @Getter
     private boolean verifyChunkCountOnCheck;
@@ -45,10 +47,13 @@ public class ChunkLimitService {
     }
 
     public void loadSpawnerLimit() {
-        this.maxSpawnersPerChunk = plugin.getConfig().getInt("max_spawners_per_chunk", 100);
+        this.enabled = plugin.getConfig().getBoolean("enable_chunk_limit", true);
+        this.maxSpawnersPerChunk = plugin.getConfig().getInt("max_spawners_per_chunk", 1000);
         this.verifyChunkCountOnCheck = plugin.getConfig().getBoolean("verify_chunk_count_on_check", true);
-        plugin.getLogger().info("Max spawners per chunk set to " + maxSpawnersPerChunk);
-        plugin.getLogger().info("Verify chunk count on check: " + verifyChunkCountOnCheck);
+        if (verifyChunkCountOnCheck) {
+            plugin.getLogger().info("Chunk spawner count verification is ENABLED. You can disable it after all chunks are verified to improve performance.");
+        }
+
     }
 
     /**
@@ -59,6 +64,10 @@ public class ChunkLimitService {
      * @return true if allowed, false otherwise
      */
     public boolean canPlaceSpawner(Player player, Location location, int quantity) {
+        if (!enabled) {
+            return true;
+        }
+
         // Check bypass permission (hardcoded for simplicity)
         if (player.hasPermission("ssaspawnerlimiter.bypass")) {
             return true;

@@ -1,10 +1,12 @@
-# SSA Spawner Limiter Messages (en_US)
-
 prefix: "&#ff8c42[&#ffb347SSA &#ffd580Limiter&#ff8c42] &r"
 
 # Limit messages
-limit_reached:
-  action_bar: "&#ff5252ᴄʜᴜɴᴋ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ: &#f8f8ff{current}&#ff5252/&#f8f8ff{limit} &#ff5252ꜱᴘᴀᴡɴᴇʀꜱ"
+chunk_limit_reached:
+  action_bar: "&#ff5252ᴄʜᴜɴᴋ ꜱᴘᴀᴡɴᴇʀ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ: &#f8f8ff{current}&#ff5252/&#f8f8ff{limit} &#ff5252ꜱᴘᴀᴡɴᴇʀꜱ"
+  sound: block.note_block.pling
+
+player_limit_reached:
+  action_bar: "&#ff5252ʏᴏᴜʀ ꜱᴘᴀᴡɴᴇʀ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ: &#f8f8ff{current}&#ff5252/&#f8f8ff{limit} &#ff5252ꜱᴘᴀᴡɴᴇʀꜱ"
   sound: block.note_block.pling
 
 # Command messages - Info
@@ -27,9 +29,19 @@ command_check_result:
 command_check_player_not_found:
   message: "&#ff5252ᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ ᴏʀ ɴᴏᴛ ᴏɴʟɪɴᴇ!"
 
+# Command messages - CheckPlayer
+command_checkplayer_result:
+  message: "&#37eb9aᴘʟᴀʏᴇʀ &#ff8c42{player}&#37eb9a ʜᴀꜱ &#ff8c42{current}&#37eb9a/&#ff8c42{limit} &#37eb9aꜱᴘᴀᴡɴᴇʀꜱ ɢʟᴏʙᴀʟʟʏ"
+
+command_checkplayer_player_not_found:
+  message: "&#ff5252ᴘʟᴀʏᴇʀ ɴᴏᴛ ꜰᴏᴜɴᴅ ᴏʀ ɴᴏᴛ ᴏɴʟɪɴᴇ!"
+
 # Command messages - Usage
 command_usage_check:
   message: "&#ff5252ᴜꜱᴀɢᴇ: &#f8f8ff/ssaspawnerlimiter check <player>"
+
+command_usage_checkplayer:
+  message: "&#ff5252ᴜꜱᴀɢᴇ: &#f8f8ff/ssaspawnerlimiter checkplayer <player>"
 
 # Command messages - Reload
 command_reload:

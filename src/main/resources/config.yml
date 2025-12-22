@@ -5,13 +5,32 @@ language: "en_US"
 # Enable or disable debug mode (prints extra info to console)
 debug: false
 
+# ========== CHUNK LIMIT SETTINGS ==========
+# Enable or disable chunk-based spawner limit
+enable_chunk_limit: true
+
 # Maximum number of spawners (including stacks) allowed per chunk
 # Each stack in a spawner counts toward the limit (not just 1 per spawner block)
 # Example: 1 spawner block with 64 stack + 1 spawner block with 6 stack = 70 total count in chunk
-max_spawners_per_chunk: 100
+max_spawners_per_chunk: 1000
 
 # Verify actual spawner count in chunk before checking limits
 # When enabled, the plugin will count all spawner stacks in the chunk using SmartSpawner API
 # This is useful for servers that already had spawners before installing this addon
 # Recommended: Keep enabled until all chunks have correct counts, then disable to save performance
 verify_chunk_count_on_check: true
+
+# ========== PLAYER LIMIT SETTINGS ==========
+# Enable or disable per-player spawner limit
+enable_player_limit: true
+
+# Default maximum number of spawners (including stacks) a player can place globally
+# This is the base limit for all players
+# Players can get higher limits through permissions using pattern: ssaspawnerlimiter.perplayer.<number>
+#   Examples:
+#   - ssaspawnerlimiter.perplayer.1500 = allows 1500 spawners
+#   - ssaspawnerlimiter.perplayer.2000 = allows 2000 spawners
+#   - ssaspawnerlimiter.perplayer.10000 = allows 10000 spawners (any number works!)
+#   - ssaspawnerlimiter.perplayer.bypass = unlimited spawners
+# If player has multiple permission nodes, the highest value will be used
+max_spawners_per_player: 500
