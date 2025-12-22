@@ -66,6 +66,9 @@ You can create **custom limit tiers** using the permission pattern: `ssaspawnerl
 SSASpawnerLimiter provides **two independent limit systems**:
 
 ### Chunk-Based Limit
+
+<img width="549" height="70" alt="{948DB322-3CD5-4420-A4E7-C63D9DB89547}" src="https://github.com/user-attachments/assets/ecaf6c4d-5250-46bd-a1d9-8537073c83d9" />
+
 Limits spawner stacks per chunk to prevent chunk overloading:
 - 1 spawner block with 64 stacks = **64 count**
 - 1 spawner block with 6 stacks = **6 count**
@@ -73,6 +76,9 @@ Limits spawner stacks per chunk to prevent chunk overloading:
 - Default: 100 spawners per chunk
 
 ### Per-Player Limit
+
+<img width="525" height="66" alt="{0E84EBA1-B007-4303-B85C-83019086C482}" src="https://github.com/user-attachments/assets/3db751ab-6fce-4733-9153-7533ee41c627" />
+
 Limits total spawner stacks a player can place globally:
 - Tracks all spawners placed by each player across the entire server
 - Default: 1000 spawners per player
@@ -92,20 +98,6 @@ enable_player_limit: true     # Enable per-player limiting
 - Counts never go below 0 (zero-floor protection)
 
 This ensures fair limiting based on actual spawner capacity, not just physical blocks.
-
-## Configuration
-
-**config.yml:**
-```yaml
-# Chunk limit settings
-enable_chunk_limit: true
-max_spawners_per_chunk: 1000
-verify_chunk_count_on_check: true  # Verify actual count from SmartSpawner API
-
-# Per-player limit settings  
-enable_player_limit: true
-max_spawners_per_player: 500      # Default limit for all players
-```
 
 ## Database
 
