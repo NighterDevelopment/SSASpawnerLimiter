@@ -2,7 +2,7 @@
 
 SSAddon (SmartSpawner Addon) that limits spawner placement per chunk and per player based on spawner stacks, with Folia support!
 
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.4+-green.svg)](https://www.minecraft.net/)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21+-green.svg)](https://www.minecraft.net/)
 [![Paper](https://img.shields.io/badge/Server-Paper%20%7C%20Folia-blue.svg)](https://papermc.io/)
 [![Java](https://img.shields.io/badge/Java-21+-orange.svg)](https://www.oracle.com/java/)
 
