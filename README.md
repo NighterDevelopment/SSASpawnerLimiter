@@ -8,7 +8,7 @@ SSAddon (SmartSpawner Addon) that limits spawner placement per chunk and per pla
 
 ## Requirements
 
-- **Minecraft**: 1.21.4+
+- **Minecraft**: 1.21+
 - **Server**: Paper or Folia
 - **Java**: 21+
 - **SmartSpawner**: 1.5.7.1+
