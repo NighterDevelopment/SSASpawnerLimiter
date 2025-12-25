@@ -20,7 +20,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.42")
     compileOnly("org.projectlombok:lombok:1.18.42")
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-    compileOnly("com.github.NighterDevelopment:SmartSpawner:1.5.7.1")
+    compileOnly("com.github.NighterDevelopment:SmartSpawner:1.5.8")
 
     // Shadowed dependencies
     implementation("com.github.NighterDevelopment:PluginUpdateCore:1.0.4")
